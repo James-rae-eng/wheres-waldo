@@ -17,6 +17,8 @@ function App() {
   const [waldo1, setWaldo1] = useState("red");
   const [waldo2, setWaldo2] = useState("red");
   const [waldo3, setWaldo3] = useState("red");
+  const [formShow, setFormshow] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -28,10 +30,24 @@ function App() {
     return () => (mounted = false);
   }, []);
 
+  useEffect(() => {
+    gameOver(); // This will be executed when the state changes
+  });
+
+  useEffect(() => {
+    if (formShow === false) {
+      let interval = setInterval(() => {
+        setElapsedTime(lastTimerCount => lastTimerCount + 1)
+      }, 1000) //each count lasts for a second
+      //cleanup the interval on complete
+      return () => clearInterval(interval)
+    }
+  }, [formShow]);
+
   const gameOver = () => {
     // Check if all waldos have been found
     if (waldo1 === "green" && waldo2 === "green" && waldo3 === "green") {
-      console.log("game over");
+      setFormshow(true);
     }
   }
 
@@ -46,17 +62,46 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    gameOver(); // This will be executed when the state changes
-  });
+  const handleSubmit = (e) => {
+    // Prevent the browser from reloading the page
+    e.preventDefault();
+
+    // Read the form name and final elapsed time
+    const name = e.target.name.value;
+    const time = e.target.time.value;
+    console.log(name, time);
+
+    // Hide input form & reset edit state
+    setFormshow(false);
+
+    // Reset characters
+    setWaldo1("red");
+    setWaldo2("red");
+    setWaldo3("red");
+  }
 
   return (
     <div className="App">
       <h1>Where's waldo</h1>
       <div className="topBar">
         <Characters waldo1={waldo1} waldo2={waldo2} waldo3={waldo3}/>
-        <Clock/>
+        <Clock elapsedTime={elapsedTime}/>
       </div>
+      { formShow ?
+          <div>
+            <h2>Game over! Add your name to the Scoreboard below</h2>
+            <form method="post" onSubmit={handleSubmit}>
+                <label>
+                  Name: <input name="name"/>
+                </label>
+                <label>
+                  Final time (s): {elapsedTime} <input type="HIDDEN" name="time" value={elapsedTime} readOnly={true}/>
+                </label>
+              <button type="submit">submit</button>
+            </form>
+          </div>
+        : null
+      }
       <Photo characters={characters} updateCharacter={updateCharacter}/>
       <Scoreboard/>
     </div>

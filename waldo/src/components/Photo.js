@@ -7,7 +7,7 @@ function Photo(props) {
     const checkCorrect = (x, y) => {
         // Check props to see if coordinates match, to within 15 pixels, return the name of the character if they do
         let result = null;
-        
+
         props.characters.forEach(function(character, index) {
             if (character.xcoordinate > (x-25) && character.xcoordinate < (x+25)) {
                 if (character.ycoordinate > (y-25) && character.ycoordinate < (y+25)) {
@@ -57,15 +57,6 @@ function Photo(props) {
         <div className="picMain">
             <div className="main" style={ { backgroundImage: "url("+waldoMain+")" } } onClick={handleClick}>
                 <div>{circle}</div>
-            </div>
-            <div>
-                {props.characters.map((character) => {
-                    return <div key={character.id}>
-                                <h2>{character.name}</h2>
-                                <h2>{character.xcoordinate}</h2>
-                                <h2>{character.ycoordinate}</h2>
-                            </div>
-                })}
             </div>
         </div>
     )
