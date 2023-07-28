@@ -2,16 +2,21 @@ import React, { useState } from "react";
 import waldoMain from '../assets/waldoMain.jpg';
 
 function Photo(props) {
-    /*<div>
-        <h1>These books are from the API</h1>
-        {props.photo.map((photo) => {
-            return <div key={photo.id}>
-                        <h2>{photo.title}</h2>
-                    </div>
-        })}
-    </div>*/
-
     const [circle, setCircle] = useState(null);
+    
+    const checkCorrect = (x, y) => {
+        // Check props to see if coordinates match, to within 15 pixels, return the name of the character if they do
+        let result = null;
+        
+        props.characters.forEach(function(character, index) {
+            if (character.xcoordinate > (x-25) && character.xcoordinate < (x+25)) {
+                if (character.ycoordinate > (y-25) && character.ycoordinate < (y+25)) {
+                    result = index;
+                }
+            }
+        });  
+        return result;
+    }
 
     const getClickCoords = (event) => {
         var e = event.target;
@@ -22,16 +27,19 @@ function Photo(props) {
     };
   
     const handleClick = (event) => {
-        // Get coordinates (as an array of [x,y] )
-        let coords = getClickCoords(event);
-
-        // Check if coordinates are correct or not (with Api)
-
         // Set circle colour
         let circleColour = "red";
-
-        // Create a circle to show area clicked
+        // Get coordinates (as an array of [x,y] )
+        let coords = getClickCoords(event);
         let [x,y] = [(Number(coords[0])-15), (Number(coords[1])-15)];
+        // Check if coordinates are correct or not (with Api)
+        let result = checkCorrect(x, y);
+        // if coordinates are correct set circle to green and update character border
+        if (result !== null) {
+            circleColour = "green";
+            props.updateCharacter(result);  
+        }
+        // Create a circle to show area clicked
         let newCircle = (
             <div className="circle"
             style={{
@@ -41,17 +49,23 @@ function Photo(props) {
             }}
             />
         );
-  
         // update 'circles'
         setCircle(newCircle);
-  
-        console.log(coords);
     };
 
     return (
         <div className="picMain">
             <div className="main" style={ { backgroundImage: "url("+waldoMain+")" } } onClick={handleClick}>
                 <div>{circle}</div>
+            </div>
+            <div>
+                {props.characters.map((character) => {
+                    return <div key={character.id}>
+                                <h2>{character.name}</h2>
+                                <h2>{character.xcoordinate}</h2>
+                                <h2>{character.ycoordinate}</h2>
+                            </div>
+                })}
             </div>
         </div>
     )
