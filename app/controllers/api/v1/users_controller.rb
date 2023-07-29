@@ -1,9 +1,9 @@
-class UsersController < ApplicationController
+class Api::V1::UsersController < ApplicationController
   before_action :set_user, only: %i[ show update destroy ]
 
   # GET /users
   def index
-    @users = User.all
+    @users = User.all.order("timeRecord ASC").limit(10)
 
     render json: @users
   end

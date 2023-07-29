@@ -2,12 +2,19 @@ import React from "react";
 
 function Scoreboard(props) {
 
-    //This data will come from the props (which gets it from the api)
-    const data = [
-        { name: "James", time: "04:23"},
-        { name: "Ocean", time: "05:58"},
-        { name: "Player3", time: "12:01"},
-    ]
+    const modTime = (seconds) => {
+        // Minutes and seconds
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        // Output like "1:01" or "4:03:59" or "123:03:59"
+        let ret = "";
+
+        ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+        ret += "" + secs;
+
+        return ret;
+    }
 
     return (
         <div className="scoreboard">
@@ -17,11 +24,11 @@ function Scoreboard(props) {
                         <th>Name</th>
                         <th>Time</th>
                     </tr>
-                    {data.map((val, key) => {
+                    {props.users.map((user, key) => {
                         return (
                             <tr key={key}>
-                                <td>{val.name}</td>
-                                <td>{val.time}</td>
+                                <td>{user.name}</td>
+                                <td>{modTime(user.timeRecord)}</td>
                             </tr>
                         )
                     })}
